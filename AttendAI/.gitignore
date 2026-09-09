@@ -1,0 +1,22 @@
+# Maven
+target/
+*.class
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+nbproject/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Runtime data - don't commit real face images or the live DB
+data/faces/*
+!data/faces/.gitkeep
+db/*.db
+*.log
