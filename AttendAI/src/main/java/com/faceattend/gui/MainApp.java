@@ -1,9 +1,9 @@
 package com.faceattend.gui;
 
 import javafx.application.Application;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 /**
@@ -22,8 +22,18 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        Label placeholder = new Label("FaceAttend - Smart Face Recognition Attendance System\n(scaffold ready - build the UI here)");
-        StackPane root = new StackPane(placeholder);
+        showLogin(primaryStage);
+    }
+
+    private void showLogin(Stage primaryStage) {
+        BorderPane root = new BorderPane();
+        LoginView loginView = new LoginView((username, password) -> {
+            if ("admin".equals(username) && "admin".equals(password)) {
+                primaryStage.setScene(new Scene(new DashboardView(), 1000, 700));
+            }
+        });
+        root.setCenter(loginView);
+        BorderPane.setAlignment(loginView, Pos.CENTER);
         Scene scene = new Scene(root, 800, 600);
 
         primaryStage.setTitle("FaceAttend");

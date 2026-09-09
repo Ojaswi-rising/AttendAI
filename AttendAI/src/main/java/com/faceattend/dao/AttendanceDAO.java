@@ -5,6 +5,7 @@ import com.faceattend.util.DBConnection;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,6 +63,7 @@ public class AttendanceDAO {
                     r.setUserId(rs.getInt("user_id"));
                     r.setUserName(rs.getString("name"));
                     r.setDate(LocalDate.parse(rs.getString("date")));
+                    r.setTime(LocalTime.parse(rs.getString("time")));
                     r.setConfidence(rs.getDouble("confidence"));
                     r.setStatus(rs.getString("status"));
                     records.add(r);
@@ -69,5 +71,50 @@ public class AttendanceDAO {
             }
         }
         return records;
+    }
+
+    public List<AttendanceRecord> getRecordsByDateRange(LocalDate from, LocalDate to) throws SQLException {
+        List<AttendanceRecord> records = new ArrayList<>();
+        String sql = "SELECT a.*, u.name FROM attendance a JOIN users u ON a.user_id = u.id "
+                + "WHERE a.date BETWEEN ? AND ? ORDER BY a.date, a.time";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, from.toString());
+            ps.setString(2, to.toString());
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    records.add(toRecord(rs));
+                }
+            }
+        }
+        return records;
+    }
+
+    public List<AttendanceRecord> getRecordsByClass(String classOrDept) throws SQLException {
+        List<AttendanceRecord> records = new ArrayList<>();
+        String sql = "SELECT a.*, u.name FROM attendance a JOIN users u ON a.user_id = u.id "
+                + "WHERE u.class_or_dept = ? ORDER BY a.date, a.time";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, classOrDept);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    records.add(toRecord(rs));
+                }
+            }
+        }
+        return records;
+    }
+
+    private AttendanceRecord toRecord(ResultSet rs) throws SQLException {
+        AttendanceRecord record = new AttendanceRecord();
+        record.setId(rs.getInt("id"));
+        record.setUserId(rs.getInt("user_id"));
+        record.setUserName(rs.getString("name"));
+        record.setDate(LocalDate.parse(rs.getString("date")));
+        record.setTime(LocalTime.parse(rs.getString("time")));
+        record.setConfidence(rs.getDouble("confidence"));
+        record.setStatus(rs.getString("status"));
+        return record;
     }
 }

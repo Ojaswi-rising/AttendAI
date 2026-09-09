@@ -19,4 +19,5 @@ Thumbs.db
 data/faces/*
 !data/faces/.gitkeep
 db/*.db
+data/model.xml*
 *.log

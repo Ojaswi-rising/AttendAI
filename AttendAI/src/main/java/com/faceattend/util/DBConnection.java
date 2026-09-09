@@ -3,6 +3,7 @@ package com.faceattend.util;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Central place to obtain a JDBC connection.
@@ -32,8 +33,34 @@ public class DBConnection {
     public static Connection getConnection() throws SQLException {
         if (connection == null || connection.isClosed()) {
             connection = DriverManager.getConnection(DB_URL);
+            initializeSchema(connection);
         }
         return connection;
+    }
+
+    private static void initializeSchema(Connection conn) throws SQLException {
+        try (Statement statement = conn.createStatement()) {
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS users ("
+                    + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    + "user_code TEXT NOT NULL UNIQUE,"
+                    + "name TEXT NOT NULL,"
+                    + "class_or_dept TEXT,"
+                    + "photo_sample_path TEXT,"
+                    + "created_at DATETIME DEFAULT CURRENT_TIMESTAMP)");
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS attendance ("
+                    + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    + "user_id INTEGER NOT NULL,"
+                    + "date TEXT NOT NULL,"
+                    + "time TEXT NOT NULL,"
+                    + "confidence REAL,"
+                    + "status TEXT NOT NULL,"
+                    + "FOREIGN KEY (user_id) REFERENCES users(id),"
+                    + "UNIQUE (user_id, date))");
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS admins ("
+                    + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    + "username TEXT NOT NULL UNIQUE,"
+                    + "password_hash TEXT NOT NULL)");
+        }
     }
 
     public static void close() {
