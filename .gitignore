@@ -1,0 +1,20 @@
+﻿# Java
+backend-java/target/
+*.class
+
+# Secrets (DB password)
+backend-java/src/main/resources/application.properties
+
+# Uploaded photos
+backend-java/uploads/
+uploads/
+
+# Python
+face-service-env/
+__pycache__/
+*.pyc
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
