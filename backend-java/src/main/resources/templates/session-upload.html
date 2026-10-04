@@ -61,6 +61,11 @@
             <form th:action="@{/session/{id}/finalize(id=${attendanceSession.id})}" method="post" onsubmit="return confirm('Are you sure? This will mark all unmatched students absent and close the session.');">
                 <button type="submit" class="btn btn-warning btn-lg w-100" th:disabled="${attendanceSession.status == 'FINALIZED'}">Finalize Attendance</button>
             </form>
+            
+            <div class="mt-3" th:if="${attendanceSession.status != 'FINALIZED'}">
+                <a th:href="@{/session/{id}/review(id=${attendanceSession.id})}" class="btn btn-info btn-lg w-100">Review Photos & Matches</a>
+            </div>
+
             <div th:if="${attendanceSession.status == 'FINALIZED'}" class="mt-3 alert alert-info">
                 This session is finalized. You cannot upload more photos. <a th:href="@{/session/{id}/summary(id=${attendanceSession.id})}">View Summary</a>
             </div>

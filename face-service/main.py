@@ -121,6 +121,8 @@ async def recognize_group(
         if img is None:
             return {"success": False, "error": "Invalid image file format."}
 
+        image_height, image_width = img.shape[:2]
+
         # Detect all faces in the photo
         faces = face_app.get(img)
         results = []
@@ -139,6 +141,8 @@ async def recognize_group(
             
             best_match = "unknown"
             best_conf = 0.0
+            second_conf = 0.0
+            second_best_roll = None
             
             # Find the closest matching known face
             for known in known_data:
@@ -146,17 +150,37 @@ async def recognize_group(
                 sim = cosine_similarity(face_emb, k_emb)
                 
                 if sim > best_conf:
+                    second_conf = best_conf
+                    second_best_roll = best_match if best_match != "unknown" else None
+                    
                     best_conf = sim
-                    if sim > similarity_threshold:
-                        best_match = known["roll_no"]
+                    best_match = known["roll_no"]
+                elif sim > second_conf:
+                    second_conf = sim
+                    second_best_roll = known["roll_no"]
             
             if best_conf <= similarity_threshold:
                 best_match = "unknown"
                 
+            is_matched = best_conf > similarity_threshold
+            matched_student_id = best_match if is_matched else None
+            
+            ambiguous = False
+            if is_matched and (best_conf - second_conf) < 0.10:
+                ambiguous = True
+
             results.append({
                 "bounding_box": {"x": x, "y": y, "width": width, "height": height},
                 "matched_roll_no": best_match,
-                "confidence": best_conf
+                "confidence": round(float(best_conf), 2),
+                "bbox": [int(bbox[0]), int(bbox[1]), int(bbox[2]), int(bbox[3])],
+                "student_id": matched_student_id,
+                "matched": is_matched,
+                "image_width": int(image_width),
+                "image_height": int(image_height),
+                "second_confidence": round(float(second_conf), 2),
+                "second_best_roll_no": second_best_roll,
+                "ambiguous": ambiguous
             })
             
         return results
