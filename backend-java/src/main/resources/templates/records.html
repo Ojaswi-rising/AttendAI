@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Attendance Records</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body class="bg-light">
+<div class="container-fluid mt-4">
+    <h2>Attendance Records</h2>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form th:action="@{/records}" method="get" class="row g-3">
+                <div class="col-md-2">
+                    <label class="form-label">Course</label>
+                    <select name="course" class="form-select">
+                        <option value="">All</option>
+                        <option th:each="c : ${courses}" th:value="${c}" th:text="${c}" th:selected="${c == selectedCourse}"></option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Year</label>
+                    <select name="year" class="form-select">
+                        <option value="">All</option>
+                        <option th:each="y : ${years}" th:value="${y}" th:text="${y}" th:selected="${y == selectedYear}"></option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Division</label>
+                    <select name="division" class="form-select">
+                        <option value="">All</option>
+                        <option th:each="d : ${divisions}" th:value="${d}" th:text="${d}" th:selected="${d == selectedDivision}"></option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Subject</label>
+                    <input type="text" name="subject" class="form-control" th:value="${subject}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">From Date</label>
+                    <input type="date" name="fromDate" class="form-control" th:value="${fromDate}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">To Date</label>
+                    <input type="date" name="toDate" class="form-control" th:value="${toDate}">
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                    <a th:href="@{/records/export.csv(course=${selectedCourse},year=${selectedYear},division=${selectedDivision},subject=${subject},fromDate=${fromDate},toDate=${toDate})}" class="btn btn-success float-end">Download CSV</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="alert alert-info">
+        <strong>Total Records:</strong> <span th:text="${totalCount}"></span> |
+        <strong>Present:</strong> <span th:text="${presentCount}"></span> |
+        <strong>Absent:</strong> <span th:text="${absentCount}"></span>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover bg-white border">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Subject</th>
+                    <th>Course</th>
+                    <th>Year</th>
+                    <th>Division</th>
+                    <th>Roll No</th>
+                    <th>Student Name</th>
+                    <th>Status</th>
+                    <th>Confidence</th>
+                    <th>Method</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="r : ${records}">
+                    <td th:text="${r.sessionDate}"></td>
+                    <td th:text="${r.subject}"></td>
+                    <td th:text="${r.course}"></td>
+                    <td th:text="${r.year}"></td>
+                    <td th:text="${r.division}"></td>
+                    <td th:text="${r.rollNo}"></td>
+                    <td th:text="${r.studentName}"></td>
+                    <td>
+                        <span th:if="${r.status == 'PRESENT'}" class="badge bg-success">PRESENT</span>
+                        <span th:if="${r.status == 'ABSENT'}" class="badge bg-danger">ABSENT</span>
+                    </td>
+                    <td th:text="${r.method == 'MANUAL' ? 'Manual' : (r.confidence != null ? #numbers.formatDecimal(r.confidence, 1, 2) : '-')}"></td>
+                    <td th:text="${r.method}"></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(records)}">
+                    <td colspan="10" class="text-center text-muted">No records found.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
