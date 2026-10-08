@@ -1,0 +1,70 @@
+# Attendance System Documentation
+
+## 1. Project Requirement Document (PRD)
+
+### 1.1 Project Overview
+The Attendance System is a web-based application designed to automate the process of tracking student attendance using facial recognition technology. It allows teachers to create class sessions, upload photos of the classroom, and automatically mark attendance by recognizing students' faces. 
+
+### 1.2 Target Audience
+*   **Teachers:** To manage attendance sessions, upload photos, and review/override attendance records.
+*   **Administrators:** To manage user accounts (teachers) and oversee system operations.
+
+### 1.3 Key Features
+*   **User Management:** Role-based access control with `ADMIN` and `TEACHER` roles.
+*   **Student Management:** Register students with their details (Roll No, Name, Course, Branch, Year, Division).
+*   **Face Enrollment:** Upload student photos to generate and store facial embeddings for recognition.
+*   **Session Management:** Create attendance sessions for specific courses, branches, and dates/times.
+*   **Automated Attendance Processing:** Upload classroom photos to a session. The system detects faces, compares them against stored embeddings, and marks students as `PRESENT`. Students not detected are marked as `ABSENT`.
+*   **Manual Override & Review:** Teachers can review face detections, including ambiguous matches, and manually override attendance statuses if the automated system misses a face or misidentifies a student.
+*   **Attendance Records:** View and export comprehensive attendance records for sessions.
+
+### 1.4 Non-Functional Requirements
+*   **Accuracy:** High precision in face detection and recognition using state-of-the-art AI models.
+*   **Scalability:** Ability to handle large classrooms and concurrent session processing.
+*   **Usability:** Intuitive web interface for teachers to easily upload photos and review results.
+
+---
+
+## 2. Technical Requirement Document (TRD)
+
+### 2.1 System Architecture
+The system follows a microservices-inspired architecture with two main components:
+1.  **Backend Application (Java):** Handles user interfaces, business logic, database interactions, and session management.
+2.  **Face Recognition Service (Python):** A dedicated service for processing images, detecting faces, and generating embeddings.
+
+### 2.2 Technology Stack
+*   **Primary Backend (Java Application):**
+    *   **Language:** Java 17
+    *   **Framework:** Spring Boot 3.3.4
+    *   **Web Layer:** Spring Web, Spring Security, Spring Boot Validation
+    *   **Data Access:** Spring Data JPA, Hibernate
+    *   **View Layer:** Thymeleaf (Server-side rendering for HTML templates)
+    *   **Build Tool:** Maven
+*   **AI/Face Service (Python Application):**
+    *   **Language:** Python 3
+    *   **Web Framework:** FastAPI (with Uvicorn)
+    *   **AI/CV Libraries:** InsightFace, ONNXRuntime, OpenCV (opencv-python-headless), NumPy
+    *   **File Handling:** python-multipart
+    *   **Containerization:** Docker
+*   **Database:**
+    *   **RDBMS:** MySQL 8.x
+    *   **Driver:** `mysql-connector-j`
+
+### 2.3 Database Schema (MySQL)
+The database (`attendance_db`) consists of several interconnected tables:
+*   `users`: Stores teacher and admin credentials with role-based access.
+*   `students`: Stores student profiles and demographic data.
+*   `face_embeddings`: Links to `students` and stores binary blob data of facial embeddings.
+*   `attendance_sessions`: Records details of a specific class session (course, date, time, teacher).
+*   `session_photos`: Stores file paths for images uploaded for a session.
+*   `face_detections`: Stores coordinates, confidences, and matches for every face detected in a session photo. Includes flags for manual overrides and ambiguous matches.
+*   `attendance`: Final attendance record (PRESENT/ABSENT) linking a student to a session.
+
+### 2.4 API Integration & Communication
+*   The Java Backend communicates with the Python Face Service via HTTP/REST APIs.
+*   The connection URL is configured in the Java properties (`face.service.url`).
+*   The Java service acts as an orchestrator, sending images to the Face Service for inference, receiving bounding boxes and embeddings, and storing the results in the database.
+
+### 2.5 File Storage
+*   Uploaded session photos and student enrollment photos are stored on the local file system.
+*   The storage directory is configurable via the `upload.dir` property in the Java backend. The system allows large file uploads (up to 20MB per file, 50MB per request).

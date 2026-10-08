@@ -108,10 +108,10 @@
                                            'top: ' + (${det.y1} * 100.0 / ${det.imageHeight}) + '%; ' +
                                            'width: ' + ((${det.x2} - ${det.x1}) * 100.0 / ${det.imageWidth}) + '%; ' +
                                            'height: ' + ((${det.y2} - ${det.y1}) * 100.0 / ${det.imageHeight}) + '%; ' +
-                                           'border-color: ' + (${det.manualOverride} ? (${det.studentId != null and det.studentId == -1} ? '#6c757d' : 'blue') : (${det.matchedRollNo} == 'unknown' ? 'red' : ((${det.confidence != null and det.confidence >= 0.65} and !${det.ambiguous}) ? '#198754' : '#ffc107'))) + ';'">
+                                           'border-color: ' + (${det.manualOverride} ? 'blue' : (${det.matchedRollNo} == 'unknown' ? 'red' : ((${det.confidence != null and det.confidence >= 0.65} and !${det.ambiguous}) ? '#198754' : '#ffc107'))) + ';'">
                                 <div class="box-label" 
-                                     th:text="${det.manualOverride} ? (${det.studentId != null and det.studentId == -1} ? 'Excluded' : (${det.matchedRollNo} == 'unknown' ? '? - manual' : ${det.matchedRollNo} + ' - manual')) : (${det.matchedRollNo} == 'unknown' ? '?' : ${det.matchedRollNo})"
-                                     th:style="'background-color: ' + (${det.manualOverride} ? (${det.studentId != null and det.studentId == -1} ? '#6c757d' : 'blue') : (${det.matchedRollNo} == 'unknown' ? 'red' : ((${det.confidence != null and det.confidence >= 0.65} and !${det.ambiguous}) ? '#198754' : '#ffc107'))) + '; color: ' + (${det.matchedRollNo} != 'unknown' and (${det.confidence != null and det.confidence < 0.65} or ${det.ambiguous}) and !${det.manualOverride} ? '#000' : '#fff') + ';'">
+                                     th:text="${det.manualOverride} ? (${det.matchedRollNo} == 'unknown' ? '? - manual' : ${det.matchedRollNo} + ' - manual') : (${det.matchedRollNo} == 'unknown' ? '?' : ${det.matchedRollNo})"
+                                     th:style="'background-color: ' + (${det.manualOverride} ? 'blue' : (${det.matchedRollNo} == 'unknown' ? 'red' : ((${det.confidence != null and det.confidence >= 0.65} and !${det.ambiguous}) ? '#198754' : '#ffc107'))) + '; color: ' + (${det.matchedRollNo} != 'unknown' and (${det.confidence != null and det.confidence < 0.65} or ${det.ambiguous}) and !${det.manualOverride} ? '#000' : '#fff') + ';'">
                                 </div>
                             </div>
                         </th:block>
@@ -174,7 +174,6 @@
             <label class="form-label">Select Student</label>
             <select class="form-select" name="studentId" id="studentSelect">
               <option value="">Not a student / Unknown</option>
-              <option value="-1">Mark Absent (Not this student)</option>
               <option th:each="student : ${allStudents}" th:value="${student.id}" th:text="${student.rollNo} + ' - ' + ${student.name}"></option>
             </select>
           </div>

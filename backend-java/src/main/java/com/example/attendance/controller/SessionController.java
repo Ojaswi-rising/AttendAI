@@ -591,10 +591,7 @@ public class SessionController {
             String roll = "unknown";
             
             if (Boolean.TRUE.equals(fd.getManualOverride())) {
-                if (fd.getStudentId() != null && fd.getStudentId() == -1L) {
-                    name = "Excluded (Absent)";
-                    roll = "absent";
-                } else if (fd.getStudentId() != null && idToStudent.containsKey(fd.getStudentId())) {
+                if (fd.getStudentId() != null && idToStudent.containsKey(fd.getStudentId())) {
                     Student s = idToStudent.get(fd.getStudentId());
                     name = s.getName();
                     roll = s.getRollNo();
