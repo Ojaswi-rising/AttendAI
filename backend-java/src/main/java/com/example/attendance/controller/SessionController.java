@@ -15,6 +15,7 @@ import com.example.attendance.repository.StudentRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -71,7 +72,11 @@ public class SessionController {
     @Autowired
     private FaceDetectionRepository faceDetectionRepository;
 
-    private static final String SESSIONS_DIR = "uploads/sessions/";
+    @Value("${upload.dir}")
+    private String uploadDir;
+
+    @Value("${face.service.url}")
+    private String faceServiceUrl;
 
     @GetMapping("/new")
     public String showNewSessionForm(Model model) {
@@ -182,7 +187,7 @@ public class SessionController {
 
         RestTemplate restTemplate = new RestTemplate();
         
-        File sessionDir = new File(SESSIONS_DIR + id);
+        File sessionDir = new File(uploadDir + "/sessions/" + id);
         if (!sessionDir.exists()) {
             sessionDir.mkdirs();
         }
@@ -212,7 +217,7 @@ public class SessionController {
 
                 try {
                     ResponseEntity<List> response = restTemplate.postForEntity(
-                            "http://localhost:8000/recognize-group",
+                            faceServiceUrl + "/recognize-group",
                             requestEntity,
                             List.class
                     );
@@ -586,7 +591,10 @@ public class SessionController {
             String roll = "unknown";
             
             if (Boolean.TRUE.equals(fd.getManualOverride())) {
-                if (fd.getStudentId() != null && idToStudent.containsKey(fd.getStudentId())) {
+                if (fd.getStudentId() != null && fd.getStudentId() == -1L) {
+                    name = "Excluded (Absent)";
+                    roll = "absent";
+                } else if (fd.getStudentId() != null && idToStudent.containsKey(fd.getStudentId())) {
                     Student s = idToStudent.get(fd.getStudentId());
                     name = s.getName();
                     roll = s.getRollNo();

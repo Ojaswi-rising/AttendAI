@@ -17,7 +17,16 @@
             <form action="/session/new" method="post">
                 <div class="mb-3">
                     <label class="form-label">Course:</label>
-                    <input type="text" name="course" class="form-control" placeholder="e.g. BCA, B.Tech, BCom" required>
+                    <select name="course" class="form-select" required>
+                        <option value="" disabled selected>Select Course</option>
+                        <option value="BCA">BCA</option>
+                        <option value="B.Tech">B.Tech</option>
+                        <option value="BCom">BCom</option>
+                        <option value="BSc">BSc</option>
+                        <option value="BA">BA</option>
+                        <option value="MCA">MCA</option>
+                        <option value="MBA">MBA</option>
+                    </select>
                 </div>
                 
                 <div class="mb-3">

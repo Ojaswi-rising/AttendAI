@@ -5,6 +5,7 @@ import com.example.attendance.entity.Student;
 import com.example.attendance.repository.FaceEmbeddingRepository;
 import com.example.attendance.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -38,7 +39,11 @@ public class RegistrationController {
     @Autowired
     private FaceEmbeddingRepository faceEmbeddingRepository;
 
-    private static final String UPLOAD_DIR = "uploads/students/";
+    @Value("${upload.dir}")
+    private String uploadDir;
+
+    @Value("${face.service.url}")
+    private String faceServiceUrl;
 
     @GetMapping("/register")
     public String showRegistrationForm() {
@@ -64,14 +69,14 @@ public class RegistrationController {
 
         try {
             // Save file locally
-            File uploadDir = new File(UPLOAD_DIR);
-            if (!uploadDir.exists()) {
-                uploadDir.mkdirs();
+            File uploadDirFile = new File(uploadDir + "/students/");
+            if (!uploadDirFile.exists()) {
+                uploadDirFile.mkdirs();
             }
 
             String originalFilename = photo.getOriginalFilename();
             String fileName = rollNo + "_" + System.currentTimeMillis() + "_" + originalFilename;
-            Path filePath = Paths.get(UPLOAD_DIR + fileName);
+            Path filePath = Paths.get(uploadDir + "/students/" + fileName);
             Files.write(filePath, photo.getBytes());
 
             // Call Python service
@@ -86,7 +91,7 @@ public class RegistrationController {
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
             ResponseEntity<Map> response = restTemplate.postForEntity(
-                    "http://localhost:8000/register-face",
+                    faceServiceUrl + "/register-face",
                     requestEntity,
                     Map.class
             );
