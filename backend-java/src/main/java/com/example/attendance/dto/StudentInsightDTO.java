@@ -26,4 +26,13 @@ public class StudentInsightDTO {
 
     public String getRiskStatus() { return riskStatus; }
     public void setRiskStatus(String riskStatus) { this.riskStatus = riskStatus; }
+
+    public double getOverallAttendancePercentage() { return attendancePercentage; }
+    public void setOverallAttendancePercentage(double val) { this.attendancePercentage = val; }
+
+    public String getAttendanceTrend() { return trend; }
+    public void setAttendanceTrend(String val) { this.trend = val; }
+
+    public String getRiskLevel() { return riskStatus; }
+    public void setRiskLevel(String val) { this.riskStatus = val; }
 }

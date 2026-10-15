@@ -11,6 +11,12 @@ import java.util.Optional;
 public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     Optional<Attendance> findBySessionIdAndStudentId(Long sessionId, Long studentId);
     List<Attendance> findBySessionId(Long sessionId);
+    List<Attendance> findByStudentId(Long studentId);
+
+    @org.springframework.data.jpa.repository.Query("SELECT s.sessionDate AS sessionDate, s.subject AS subject, a.status AS status " +
+           "FROM Attendance a JOIN AttendanceSession s ON a.sessionId = s.id " +
+           "WHERE a.studentId = :studentId ORDER BY s.sessionDate DESC")
+    List<java.util.Map<String, Object>> findStudentAttendanceHistory(@org.springframework.data.repository.query.Param("studentId") Long studentId);
 
     @org.springframework.data.jpa.repository.Query("SELECT s.sessionDate AS sessionDate, s.subject AS subject, st.course AS course, st.year AS year, st.division AS division, " +
            "st.rollNo AS rollNo, st.name AS studentName, a.status AS status, a.confidence AS confidence, a.method AS method " +

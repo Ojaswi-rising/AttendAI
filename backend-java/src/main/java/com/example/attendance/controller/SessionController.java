@@ -1,5 +1,8 @@
 package com.example.attendance.controller;
 
+import java.security.Principal;
+import com.example.attendance.repository.UserRepository;
+
 import com.example.attendance.entity.Attendance;
 import com.example.attendance.entity.AttendanceSession;
 import com.example.attendance.entity.FaceEmbedding;
@@ -51,8 +54,12 @@ import java.util.Set;
 import java.util.HashSet;
 
 @Controller
+@org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
 @RequestMapping("/session")
 public class SessionController {
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private AttendanceSessionRepository sessionRepository;
@@ -86,7 +93,7 @@ public class SessionController {
     }
 
     @PostMapping("/new")
-    public String createSession(
+    public String createSession(Principal principal, 
             @RequestParam("course") String course,
             @RequestParam(value = "branch", required = false) String branch,
             @RequestParam("year") String year,
@@ -103,7 +110,7 @@ public class SessionController {
         session.setSubject(subject);
         session.setSessionDate(sessionDate);
         session.setSessionTime(sessionTime);
-        session.setTeacherId(1L); // hardcoded for now
+        com.example.attendance.entity.User user = userRepository.findByEmailIgnoreCase(principal.getName()).orElseThrow(() -> new RuntimeException("User not found")); session.setTeacherId(user.getId());
         session.setStatus("OPEN");
 
         session = sessionRepository.save(session);
@@ -649,3 +656,4 @@ public class SessionController {
         return "redirect:/session/" + id + "/review";
     }
 }
+

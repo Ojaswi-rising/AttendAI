@@ -14,7 +14,7 @@
         <div class="card-body">
             <h2 class="card-title text-center mb-4">Create New Session</h2>
             
-            <form action="/session/new" method="post">
+            <form th:action="@{/session/new}" method="post">
                 <div class="mb-3">
                     <label class="form-label">Course:</label>
                     <select name="course" class="form-select" required>

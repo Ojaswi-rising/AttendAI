@@ -20,6 +20,9 @@ public class Student {
     private String year;
     private String division;
 
+    @Column(unique = true)
+    private String email;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
@@ -50,6 +53,9 @@ public class Student {
 
     public String getDivision() { return division; }
     public void setDivision(String division) { this.division = division; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Controller
+@org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
 @RequestMapping("/records")
 public class RecordsController {
 
