@@ -27,12 +27,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/error").permitAll()
+                .requestMatchers("/login", "/signup", "/css/**", "/js/**", "/images/**", "/error", "/403").permitAll()
+                .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
                 .loginPage("/login")
-                .defaultSuccessUrl("/", true)
+                .successHandler(new com.example.attendance.security.CustomAuthenticationSuccessHandler())
                 .permitAll()
             )
             .logout(logout -> logout
@@ -40,6 +41,7 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/login?logout")
                 .permitAll()
             );
+        http.exceptionHandling(ex -> ex.accessDeniedPage("/403"));
         return http.build();
     }
 

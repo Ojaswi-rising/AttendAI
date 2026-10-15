@@ -21,3 +21,8 @@ __pycache__/
 .DS_Store
 
 cloudflared.exe
+backend-java/run.ps1
+backend-java/cookies.txt
+build_*.py
+setup.py
+templates.py
